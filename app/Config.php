@@ -3,6 +3,7 @@ namespace App;
 
 class Config{
     const PATH_DIRECTORY_SQLITE = 'db/';
+    const PATH_SCHEMA_DATABASE  = "db/sqlite_structure.sql";
     const EXTENSION_SQLITE_DB = ".db";
 
     public static function build_sqlitedb_name(array $params)
