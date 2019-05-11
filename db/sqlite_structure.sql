@@ -16,4 +16,10 @@ CREATE TABLE NoteTags
     _tag     TEXT NOT NULL,
     FOREIGN KEY (_note_id) REFERENCES Notes (_id) ON DELETE CASCADE,
     FOREIGN KEY (_tag)     REFERENCES Tags  (_tag_name)
+);
+
+CREATE TABLE UserPreferences
+(
+    _preference_id      TEXT NOT NULL PRIMARY KEY,
+    _preference_value   TEXT NOT NULL
 )
