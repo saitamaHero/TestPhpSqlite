@@ -35,6 +35,11 @@ class SQLiteConnection
 
     private function get_db_commands($filepath, $delimiter = ';')
     {
+
+        if(!file_exists($filepath)){
+            return [];
+        }
+
         $file = fopen($filepath, "r");
 
         $content = trim(fread($file, filesize($filepath)));
