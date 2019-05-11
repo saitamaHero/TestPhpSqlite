@@ -11,13 +11,14 @@ if (!isset($_REQUEST['user'])) {
     die();
 }
 
-$username = $_REQUEST['user'];
-$userdb   = Config::build_sqlitedb_path(['notes_', $username]);
+$username       = $_REQUEST['user'];
+$userdb         = Config::build_sqlitedb_path(['notes_', $username]);
+$doFirstInsert  = !file_exists($userdb);
 
 $pdo = (new SQLiteConnection())->get_instance($userdb, Config::PATH_SCHEMA_DATABASE);
-/*
-if ($pdo != null) {
-    echo 'Base de datos creada: <br>';
+
+if ($pdo != null && $doFirstInsert) {
+   // echo 'Base de datos creada: <br>';
 
     $tags = ['dionicio', 'nuevo', 'noticias'];
 
@@ -25,8 +26,8 @@ if ($pdo != null) {
     $statement->bindValue(':title', "Titulo 1(" . $username . ")");
     $statement->bindValue(':msg', "Hey Hey!");
     $statement->execute();
-    echo $pdo->lastInsertId();
-    echo $statement->rowCount();
+    //echo $pdo->lastInsertId();
+    //echo $statement->rowCount();
 
 
     foreach ($tags as $key => $value) {
@@ -51,14 +52,28 @@ if ($pdo != null) {
             break;
         }
     }
-}
-*/
+        
+    $preferences = [];
 
+    //Preferencias base del usuario
+    $preferences['textToTesting'] = $username.' likes programming in PHP';
+    $preferences['showCount']     = 5;
+    $preferences['bgcolor']       = '#4286f4';
+
+    foreach ($preferences as $key => $value) {
+        $statement  =  $statement = $pdo->prepare("INSERT INTO UserPreferences (_preference_id, _preference_value) VALUES (:prefid, :prefval)");
+        $statement->bindValue(':prefid',  $key);
+        $statement->bindValue(':prefval', $value);
+        $statement->execute();
+
+        if ($statement->rowCount() < 1) {
+            break;
+        }
+    }
+}
 
 if ($pdo != null) 
 {
-    //echo '<h4>Estamos conectados con sqlite</h4><br>';
-
     $statement = $pdo->prepare("SELECT * FROM Notes WHERE _id = 1");
     $statement->execute();
 
@@ -80,7 +95,7 @@ if ($pdo != null)
     $result['_tags'] = $tags;
 
     header('Content-Type: application/json');
-    echo json_encode($result);
+    echo json_encode($result, JSON_PRETTY_PRINT);
 } else {
     echo '<h4>Ni siquiera eso puedes hacer bien</h4>';
 }
