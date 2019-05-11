@@ -10,6 +10,7 @@ class SQLiteConnection
         if ($this->pdo == null) {
             try {
                 $this->pdo = new \PDO("sqlite:" . $path);
+                $this->pdo-> setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
 
                 if ($this->pdo != null) {
                     $commands = $this->get_db_commands($schema);
